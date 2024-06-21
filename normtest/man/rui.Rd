@@ -2,7 +2,7 @@
 % Please edit documentation in R/rui.R
 \name{rui}
 \alias{rui}
-\title{This function puts together all the function from the package in the correct order.}
+\title{This function puts together all the multigroup functions from the package in the correct order.}
 \usage{
 rui(my_data, var1, var2, var3)
 }
@@ -16,5 +16,5 @@ rui(my_data, var1, var2, var3)
 \item{var3}{a list that points column names of my_data to the factors of the experiment}
 }
 \description{
-This function puts together all the function from the package in the correct order.
+This function puts together all the multigroup functions from the package in the correct order.
 }

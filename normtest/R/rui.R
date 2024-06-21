@@ -1,4 +1,4 @@
-#' This function puts together all the function from the package in the correct order.
+#' This function puts together all the multigroup functions from the package in the correct order.
 #' @param my_data a data object
 #' @param var1 a list that points column names of my_data to the factors of the experiment
 #' @param var2 a list that points column names of my_data to the factors of the experiment

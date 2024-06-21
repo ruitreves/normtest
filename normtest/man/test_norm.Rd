@@ -2,7 +2,7 @@
 % Please edit documentation in R/test_norm.R
 \name{test_norm}
 \alias{test_norm}
-\title{test and sort data by distribution and variance equality}
+\title{For at least 3 groups. Test and sort data by distribution and variance equality}
 \usage{
 test_norm(my_data, var1, var2)
 }
@@ -17,5 +17,5 @@ test_norm(my_data, var1, var2)
 Three dataframes tier1, tier2, tier3 assigned to global environment
 }
 \description{
-test and sort data by distribution and variance equality
+For at least 3 groups. Test and sort data by distribution and variance equality
 }

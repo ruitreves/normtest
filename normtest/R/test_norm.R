@@ -1,4 +1,4 @@
-#' test and sort data by distribution and variance equality
+#' For at least 3 groups. Test and sort data by distribution and variance equality
 #' @param my_data A numeric set of data such as list, double, integer, etc.
 #' @param var1 A column from a sample_info table used to define which column names of my_data go with var1
 #' @param var2 A column from a sample_info table used to define which column names of my_data go with var2
