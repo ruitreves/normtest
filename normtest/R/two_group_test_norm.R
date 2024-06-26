@@ -15,7 +15,7 @@ two_group_test_norm <- function(my_data, var1) {
 
         name_list <- rownames(my_data)
 
-        model <- stats::lm(unlist(my_data[i, ]) ~ var1, as.data.frame(my_data))
+        model <- stats::lm(unlist(my_data[i, ]) ~ var1, as.data.frame(my_data), na.action = na.exclude)
         resids <- model$residuals
 
         var1 <- as.factor(var1)

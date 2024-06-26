@@ -2,7 +2,7 @@
 % Please edit documentation in R/odds.R
 \name{fold_change}
 \alias{fold_change}
-\title{The fold_change functoin iterates through the groups specified by var1
+\title{Only for more than two groups. The fold_change function iterates through the groups specified by var1
 to calculate the log2FoldChange of mean(groupA) / mean(groupB)}
 \usage{
 fold_change(my_data, var1)
@@ -16,6 +16,6 @@ fold_change(my_data, var1)
 a dataframe containing foldchanges for each groupwise comparison
 }
 \description{
-The fold_change functoin iterates through the groups specified by var1
+Only for more than two groups. The fold_change function iterates through the groups specified by var1
 to calculate the log2FoldChange of mean(groupA) / mean(groupB)
 }

@@ -45,7 +45,7 @@ rui <- function(my_data, var1, var2, var3) {
 
         welch_results <- cbind(welch_res, dunnett_res)
 
-        write.csv(welch_results, "welch_results.csv")
+        write.csv(welch_results, "multi_group_welch_results.csv")
     }
 
     ########

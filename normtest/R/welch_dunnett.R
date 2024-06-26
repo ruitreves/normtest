@@ -23,7 +23,7 @@ run_welch <- function(my_data, var1) {
     }
 
     rownames(welch_res) <- rownames(my_data)
-    colnames(welch_res) <- "Welch_Pval"
+    colnames(welch_res) <- "Pval"
     welch_res <- as.data.frame(welch_res)
 
     cat("\n")
