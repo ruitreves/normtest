@@ -1,5 +1,7 @@
-#' Only for more than two groups. The fold_change function iterates through the groups specified by var1
-#' to calculate the log2FoldChange of mean(groupA) / mean(groupB)
+#' The fold_change function iterates through the groups specified by var1
+#' to calculate the log2FoldChange of mean(groupA) / mean(groupB). Note that this function
+#' will order the groups alphabetically before proceding, and a column named "log2FoldChange_GroupB_vs_GroupA"
+#' is reporting log2(mean(GroupA) / mean(groupB))
 #' @param my_data a dataframe, double, list with numeric entries
 #' @param var1 a list that points column names of my_data to the factors of the experiment
 #' @return a dataframe containing foldchanges for each groupwise comparison
@@ -47,7 +49,7 @@ fold_change <- function(my_data, var1) {
         counter <- counter + 1
         if (counter <= length(grp_list)) {
             for (j in counter:length(grp_list)) {
-                the_name <- paste("log2FoldChange_", grp_list[j], "_vs_", grp, sep="")
+                the_name <- paste("log2FoldChange_", grp, "_vs_", grp_list[j], sep="")
                 col_name_list <- append(col_name_list, the_name)
             }
         }
@@ -57,30 +59,6 @@ fold_change <- function(my_data, var1) {
     colnames(big_res) <- col_name_list
     cat("\n")
     return(big_res)
-}
-
-#' Two group fold changes
-#' @param my_data a data object 
-#' @param var1 a list that points column names of my_data to the factors of the experiment
-#' @return a dataframe of foldchanges
-#' @export 
-
-two_group_fc <- function(my_data, var1) {
-    cat("Calculating fold changes...")
-    fc_res <- NULL
-    grps <- unique(var1)
-    for (i in 1:nrow(my_data)) {
-        mean1 <- mean(unlist(my_data[i, ][var1 == grps[1]]))
-        mean2 <- mean(unlist(my_data[i, ][var1 == grps[2]]))
-
-        fc <- mean1 / mean2
-        l2fc <- log2(fc)
-        fc_res <- rbind(fc_res, l2fc)
-    }
-    rownames(fc_res) <- rownames(my_data)
-    colnames(fc_res) <- paste0("log2FoldChange_", grps[1], "_vs_", grps[2])
-    cat("\n")
-    return(fc_res)
 }
 
 #' combine fold changes and pvals into single dataframe. takes column

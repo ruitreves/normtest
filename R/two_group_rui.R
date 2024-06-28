@@ -33,4 +33,5 @@ two_group_rui <- function(my_data, var1) {
         write.csv(wilcox_res, "wilcox_results.csv")
     }
     cat("Done.")
+    cat("\n")
 }
