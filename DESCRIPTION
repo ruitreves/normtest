@@ -12,7 +12,7 @@ Description: The purpose of this package is to provide functions that allow a us
     1. tier1 is data which is normally distributed and homoscedastic.
     2. tier2 is data which is normally distributed and heteroscedastic.
     3. tier3 is data which is not normally distributed.
-    Each of the three thiers is then analyzed with the appropriate statistical tests. In the multigroup case,
+    Each of the three tiers is then analyzed with the appropriate statistical tests. In the multigroup case,
     tier1 is analyzed with a two way anova followed by a Tukey multi-comparison test. Tier2 is analyzed by a 
     Welch t-test followed by a Dunnett T3 multi-comparison test. Tier3 is analyzed by Kruskal-Wallis test 
     followed by a Dunn multi-comparison test. 

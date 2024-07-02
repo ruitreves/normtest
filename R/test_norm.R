@@ -45,7 +45,7 @@ test_norm <- function(my_data, var1, var2) {
         #this is a just progess tracker for the function
         if (i%%100==0) {
             per <- round((i / nrow(my_data)) * 100)
-            cat(paste("\r", "sorting data ", per, "% done...", sep=""))
+            cat(paste0("\r", "sorting data ", per, "% done..."))
         }
     }
     #extract geneids for indexing

@@ -1,0 +1,131 @@
+---
+title: "misc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{misc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(normtest)
+```
+
+This vignette is to demonstrate some of the miscellaneous functionality of the normtest package.
+
+## Example 1: You want to sort your data according to it's distribution and scedasticity, but you don't want to use the statistical tests provided here. 
+
+The test_norm and two_group_test_norm functions are available to use independently of the 
+statistical tests. Here's how to use them. 
+
+You will still need a sample_info object for your data. You can see more details about this 
+in the vignettes "multi_group_vignette" and "two_group_vignette". 
+
+In the case of multiple groups (more than 2):
+
+You'll have some data: 
+
+```{r eval = TRUE}
+mg_counts <- read.csv("multigroup_counts.csv")
+#change first column to rownames
+mg_counts <- cf(mg_counts)
+head(mg_counts)
+```
+
+And you'll create your sample_info object:
+
+```{r eval = TRUE}
+mg_sample_info <- data.frame(samples = colnames(mg_counts), 
+                          diet = c(rep("d1", 10), rep("d2", 10)), 
+                          treatment = c(rep("t1", 5), rep("t2", 5), rep("t1", 5), rep("t2", 5)),
+                          group = c(rep("d1t1", 5), rep("d1t2", 5), rep("d2t1", 5), rep("d2t2", 5)))
+mg_sample_info
+```
+
+Then you can call test_norm:
+
+```{r eval = FALSE}
+test_norm(mg_counts, mg_sample_info$diet, mg_sample_info$treatment)
+```
+
+This will create tier1, tier2, and tier3 in your r environment, and you can use them as 
+you like. 
+
+In the case of two groups: 
+
+You'll again have some data:
+
+```{r eval = TRUE}
+tg_counts <- read.csv("twogroup_counts.csv")
+#change first column to rownames
+tg_counts <- cf(tg_counts)
+head(tg_counts)
+```
+
+And your sample_info table:
+
+```{r eval = TRUE}
+tg_sample_info <- data.frame(sample = colnames(tg_counts), group = c(rep("GroupX", 4), rep("GroupY", 4)))
+tg_sample_info
+```
+
+Then you can call two_group_test_norm:
+
+```{r eval = FALSE}
+two_group_test_norm(tg_counts, tg_sample_info$group)
+```
+
+This will again create tier1, tier2, and tier3 in your r environment, and you can use them as 
+you like. 
+
+## Example 2: You already know your data to be suitable for a _____ test and you only want to do that test and maybe the multi comparison test.
+
+The statistical tests are also available to use independently, and the process of using
+them is largely the same. 
+
+The most different of the tests is the two way anova test, which is only suitable for a 
+multi group case. This is because it uses two experimental factors rather than one. 
+
+We can use it like this: 
+
+```{r eval = FALSE}
+anova_results <- run_anova(mg_counts, mg_sample_info$diet, mg_sample_info$treatment)
+```
+
+If you wanted to do the Tukey multicomparison test, you can do it like this:
+
+```{r eval = FALSE}
+tukey_results <- run_tukey(mg_counts, mg_sample_info$group)
+```
+
+The rest of the tests are used just like the Tukey test. 
+
+```{r eval = FALSE}
+ttest_results <- run_ttest(tg_counts, tg_sample_info$group)
+welch_results <- run_welch(mg_counts, mg_sample_info$group)
+#the same run_welch function is used for both two group and multi group cases
+kw_results <- run_kruskal(mg_counts, mg_sample_info$group)
+```
+
+etc...
+
+## Example 3: You only want to calculate fold changes.
+
+The same fold_change function is used for both multi and two group cases. 
+
+```{r eval = TRUE}
+mg_fc <- fold_change(head(mg_counts), mg_sample_info$group)
+mg_fc
+```
+
+The two group case works the same way.
+
+
+

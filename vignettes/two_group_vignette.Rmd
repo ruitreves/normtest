@@ -2,7 +2,7 @@
 title: "normtest workflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{""}
+  %\VignetteIndexEntry{normtest workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,13 +21,14 @@ library(normtest)
 ```
 
 # Standard Workflow
-What follows in this vignette is a standard workflow for using the normtest package.
-While it is possible to input raw data, it is recommended to use preprocess, normalized, and cleaned
+What follows in this vignette is a standard workflow for using the normtest package to analyze data from
+only two groups.
+While it is possible to input raw data, it is recommended to use preprocessed, normalized, and cleaned
 data. 
 
 We start by loading our data. We have a .csv file of normalized gene counts, called normalized_counts.csv.
 ```{r loadData, eval = TRUE}
-counts <- read.csv("normalized_counts.csv")
+counts <- read.csv("twogroup_counts.csv")
 ```
 
 Heres what the data looks like: 
@@ -93,7 +94,7 @@ To identify "differentially expressed genes" (degs), we'll write a small functio
 This function will take one of our results tables, and filter it based on a set p value and fold change, using
 an absolute value. 
 ```{r idDEGS, eval = TRUE}
-id_deg <- function(data, p, f) {
+id_deg <- function(data, p = 0.05, f = 1) {
     degs <- data[data[, 1] < p, ]
     degs <- degs[abs(degs[, 2]) > f, ]
     return(degs)
@@ -103,17 +104,17 @@ id_deg <- function(data, p, f) {
  log2FoldChange cutoff will be 1. 
 
 ```{r DEGS, eval = TRUE}
-x_degs <- id_deg(x, 0.05, 1)
-y_degs <- id_deg(y, 0.05, 1)
-z_degs <- id_deg(z, 0.05, 1)
+x_degs <- id_deg(x)
+y_degs <- id_deg(y)
+z_degs <- id_deg(z)
 # number of degs found from t-test
-nrow(x)
+nrow(x_degs)
 # number of degs found from welch-test
-nrow(y)
+nrow(y_degs)
 # number of degs found from wilcox-test
-nrow(z)
+nrow(z_degs)
 #well look only at x, but the others will look very similar
-head(x)
+head(x_degs)
 ```
 
 Now if we like, we can combine all the degs found into one data object. 

@@ -1,0 +1,168 @@
+---
+title: "multi_group_vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{multi_group_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(normtest)
+```
+
+# Standard Workflow
+What follows in this vignette is a standard workflow for using the normtest package to analyze data from
+more than two groups. 
+While it is possible to input raw data, it is recommended to use preprocessed, normalized, and cleaned
+data. 
+
+Our goal here is to take a dataset from an experiment with multiple factors and analyze it using the appropriate
+statistics. 
+
+We start by loading our data. We have a .csv file of normalized gene counts, called multigroup_counts.csv.
+
+```{r loadData, eval = TRUE}
+counts <- read.csv("multigroup_counts.csv")
+head(counts)
+```
+
+Note that the data is already cleaned and ready for analysis. We do, however, need to change the column "X" 
+to be the rownames of our data, and then remove the column. We use the cf() function included in the normtest
+package. This is a very simple helper function that will set a specified column (defaults to column 1) to 
+be rownames, and then remove the column from the data. 
+
+```{r cf, eval = TRUE}
+counts <- cf(counts)
+head(counts)
+```
+
+Now we must build a sample_info object. The purpose of this object is to define which groups or other factors
+each sample in our data belongs to. 
+
+```{r sampleInfo, eval = TRUE}
+sample_info <- data.frame(samples = colnames(counts), 
+                          diet = c(rep("d1", 10), rep("d2", 10)), 
+                          treatment = c(rep("t1", 5), rep("t2", 5), rep("t1", 5), rep("t2", 5)),
+                          group = c(rep("d1t1", 5), rep("d1t2", 5), rep("d2t1", 5), rep("d2t2", 5)))
+sample_info
+```
+
+Each sample from this experiement was given one of two diets, d1 or d2. Each sample was also given a treatment,
+either t1 or t2. We have therefore constructed groups, which define both the diet and treatment of the sample.
+
+The groups variable must be a linear combination of the other two variables (in this case, diet and treatment).
+In other words, the group variable must describe the distribution of the other two variables.
+group-d1t1 describes samples that got diet1 and treatment1, group-d2t1 describes samples that got diet2 and treatment1, etc.
+The reason for this is that the multicomparison tests used in the analysis are not able to consider two 
+factors, but rather only one. The statistical criteria used to sort the data into one of the three tiers 
+relies on the group distributions as defined by the first two variables. In order for these criteria to 
+remain satisfied when performing the multicomparison tests, the group variable must follow this convention. 
+
+The sample_info table above is an example of this. Below is a non-example (i.e., don't do this).
+
+```{r notSampleInfo, eval = TRUE}
+#dont do this!!! this is bad!!!
+bad_sample_info <- data.frame(samples = colnames(counts), 
+                          diet = c(rep("d1", 10), rep("d2", 10)), 
+                          treatment = c(rep("t1", 5), rep("t2", 5), rep("t1", 5), rep("t2", 5)),
+                          group = c(rep("group1", 2), rep("group2", 8), rep("group3", 3), rep("group4", 7)))
+#dont use this!!! 
+bad_sample_info
+```
+
+Notice how to group variables do not "line up with" or "describe" the distribution of the diet and 
+treatment variables.
+
+Now that we have our sample_info object and our counts ready, we can run the analysis. 
+We can use the main function "rui" to call all the appropriate functions in succession. 
+
+```{r callMain, eval = FALSE}
+rui(counts, sample_info$diet, sample_info$treatment, sample_info$group)
+```
+
+This will write three .csv files in the current directory, "anova_results.csv", "multi_group_welch_results.csv", 
+and "KW_results.csv". It will also assign three variables tier1, tier2, and tier3 to your global r environment. 
+If you have important variables with these names, please note that this function will overwrite them. 
+
+Also note that depending on the size of your data, this function could take several minutes to run. 
+
+From here, the rest is up to you, but we will demonstrate what next steps are useful for our purposes.
+
+Let's look at our anova_results.
+```{r anovaAnalysis, eval = TRUE}
+x <- read.csv("anova_results.csv")
+x <- cf(x)
+head(x)
+```
+
+This file contains data from every comparison, and it is unwieldy to consider every
+comparison at once.
+We'll trim it down to make it easier. 
+
+```{r xTrim, eval = TRUE}
+x1 <- x[, 1:3]
+head(x1)
+```
+Now x1 shows only the pvalues for the first two experiemental factors and their interaction.
+Suppose we are most interested in the interaction, and wish to see only pvalues significant 
+at the alpha = 0.05 level. 
+
+```{r eval = TRUE}
+intx <- x1[x1[, 3] < 0.05, ]
+head(intx)
+```
+
+We could now use these rows with significant interaction to index the whole anova_results
+table and get more info about the comparisons. 
+
+```{r eval = TRUE}
+intx_names <- rownames(intx)
+big_intx <- x[intx_names, ]
+head(big_intx)
+```
+
+Lets consider another use case. We'll use the KW_results file this time.
+
+```{r eval = TRUE}
+kw <- read.csv("KW_results.csv")
+kw <- cf(kw)
+```
+ 
+Suppose we are interested in looking at the comparison d1t1_vs_d2t2. We'll get just those
+columns from the kw table. 
+
+```{r eval = TRUE}
+comp <- kw[, 6:7]
+head(comp)
+```
+
+Then, maybe we want to see which fold changes are the largest (considering absoulute values). 
+
+```{r eval = TRUE}
+ordered_comp <- comp[order(abs(comp[, 2]), decreasing = TRUE), ]
+head(ordered_comp)
+```
+
+Certainly, negative infinity sounds like a large fold change. But this is actually likely
+the result of us taking log2(0). So its probably more descriptive if we remove infinite 
+values from this comparison. 
+
+```{r eval = TRUE}
+ordered_comp <- comp[is.finite(comp[, 2]), ]
+ordered_comp <- ordered_comp[order(abs(ordered_comp[, 2]), decreasing = TRUE), ]
+head(ordered_comp)
+```
+
+Now these values are more useful to us. 
+
+Both of these use cases are only that, specific use cases. There is much more you can do 
+with this data after processing, and this is likely dependent on what kind of data you have
+and of course, what you're trying to achieve. 
