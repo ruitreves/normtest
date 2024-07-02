@@ -5,7 +5,6 @@
 #' @return a data object containing p values for var1, var2, and interaction of var1 * var2 for each row of my_data, computed by anova
 #' @export
 
-#anova
 run_anova <- function(my_data, var1, var2) {
     my_anova <- NULL
     for (i in 1:nrow(my_data)) {
@@ -34,7 +33,6 @@ run_anova <- function(my_data, var1, var2) {
 #' return a data object containing p values for each groupwise comparison as specified by var1, computed by TukeyHSD
 #' @export
 
-#Tukey multi comparison test
 run_tukey <- function(my_data, var1) {
     test_tukey <- NULL
     for (i in 1:nrow(my_data)) {

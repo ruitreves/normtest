@@ -1,4 +1,4 @@
-Package: rui
+Package: normtest
 Title: Sort Data by Distribution and Apply Appropriate Statistical Test in a High Throughput Manner
 Version: 0.0.0.9000
 Authors@R: 
@@ -27,3 +27,9 @@ Imports:
     onewaytests,
     PMCMRplus,
     stats
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr

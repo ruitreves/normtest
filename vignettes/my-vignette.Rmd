@@ -1,0 +1,129 @@
+---
+title: "normtest workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{""}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+First, we must load the package.
+
+```{r setup}
+library(normtest)
+```
+
+# Standard Workflow
+What follows in this vignette is a standard workflow for using the normtest package.
+While it is possible to input raw data, it is recommended to use preprocess, normalized, and cleaned
+data. 
+
+We start by loading our data. We have a .csv file of normalized gene counts, called normalized_counts.csv.
+```{r loadData, eval = TRUE}
+counts <- read.csv("normalized_counts.csv")
+```
+
+Heres what the data looks like: 
+```{r head(x), eval = TRUE}
+head(counts)
+```
+
+Note that the data is already cleaned and ready for analysis. We do, however, need to change the column "X" 
+to be the rownames of our data, and then remove the column. We use the cf() function included in the normtest
+package. This is a very simple helper function that will set a specified column (defaults to column 1) to 
+be rownames, and then remove the column from the data. 
+
+```{r cf, eval = TRUE}
+counts <- cf(counts)
+head(counts)
+```
+
+Now we must build a sample_info object. The purpose of this object is to define which groups or other factors
+each sample in our data belongs to. 
+```{r sampleInfo, eval = TRUE}
+sample_info <- data.frame(sample = colnames(counts), group = c(rep("GroupX", 4), rep("GroupY", 4)))
+sample_info
+```
+
+Now we are ready to run the analysis. The two_group_rui function will run all functions applicable to the 
+dataset, and will create three .csv files in your current directory, "t_test_results.csv", "two_group_welch_results.csv", 
+and "wilcox_results.csv". Note that any files with these names will be overwritten each time this function is called.
+Also be aware that the main function will assign three global variables, "tier1", "tier2", and "tier3", which 
+are subsets of the main data object sorted according to the statistical criteria ourlined in the description.
+You could determine how many rows of your data were sorted into each category by doing nrow(tier1), nrow(tier2),
+nrow(tier3). 
+
+We call the main function:
+```{r callMain, eval = FALSE}
+two_group_rui(counts, sample_info$group)
+```
+
+Depending on the size of your data, this function could take several minutes to run. 
+
+Now your data is ready, it has been sorted and analyzed according to the appropriate criteria. 
+
+From here, the next steps are in your hands. Our next steps are to look for which genes are significantly 
+different between the specified groups.
+
+We read in each analyzed .csv file and apply the cf function.
+
+```{r degs, eval = TRUE}
+x <- read.csv("t_test_results.csv")
+x <- cf(x)
+y <- read.csv("two_group_welch_results.csv")
+y <- cf(y)
+z <- read.csv("wilcox_results.csv")
+z <- cf(z)
+#t_test_results
+head(x)
+#welch_results
+head(y)
+#wilcox_results
+head(z)
+```
+
+To identify "differentially expressed genes" (degs), we'll write a small function to make the work a bit easier.
+This function will take one of our results tables, and filter it based on a set p value and fold change, using
+an absolute value. 
+```{r idDEGS, eval = TRUE}
+id_deg <- function(data, p, f) {
+    degs <- data[data[, 1] < p, ]
+    degs <- degs[abs(degs[, 2]) > f, ]
+    return(degs)
+}
+```
+ Now we call the function on each of the test results, x, y, and z. Our pvalue cutoff will be 0.05, and our 
+ log2FoldChange cutoff will be 1. 
+
+```{r DEGS, eval = TRUE}
+x_degs <- id_deg(x, 0.05, 1)
+y_degs <- id_deg(y, 0.05, 1)
+z_degs <- id_deg(z, 0.05, 1)
+# number of degs found from t-test
+nrow(x)
+# number of degs found from welch-test
+nrow(y)
+# number of degs found from wilcox-test
+nrow(z)
+#well look only at x, but the others will look very similar
+head(x)
+```
+
+Now if we like, we can combine all the degs found into one data object. 
+```{r rbindDegs, eval = TRUE}
+degs <- rbind(x_degs, y_degs, z_degs)
+#number of degs found
+nrow(degs)
+head(degs)
+```
+
+We have now identified differentially expressed genes and conclude this workflow. 
+
+
