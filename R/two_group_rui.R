@@ -6,30 +6,33 @@
 two_group_rui <- function(my_data, var1) {
     #sort data into normal and equal variance, normal and nonequal variances,
     #and nonnormal.
-    two_group_test_norm(my_data, var1)
+    res <- two_group_test_norm(my_data, var1)
+    ne <- res[[1]]
+    nu <- res[[2]]
+    nn <- res[[3]]
 
-    if (nrow(tier1) > 0) {
-        t_res <- run_ttest(tier1, var1)
-        tier1_folds <- fold_change(tier1, var1)
+    if (nrow(ne) > 0) {
+        t_res <- run_ttest(ne, var1)
+        ne_folds <- fold_change(ne, var1)
 
-        t_res <- cbind(t_res, tier1_folds)
+        t_res <- cbind(t_res, ne_folds)
         write.csv(t_res, "t_test_results.csv")
     }
 
-    if (nrow(tier2) > 0) {
+    if (nrow(nu) > 0) {
 
-        welch_res <- run_welch(tier2, var1)
-        tier2_folds <- fold_change(tier2, var1)
+        welch_res <- run_welch(nu, var1)
+        nu_folds <- fold_change(nu, var1)
 
-        welch_res <- cbind(welch_res, tier2_folds)
+        welch_res <- cbind(welch_res, nu_folds)
         write.csv(welch_res, "two_group_welch_results.csv")
     }
 
-    if (nrow(tier3) > 0) {
-        wilcox_res <- run_wilcox(tier3, var1)
-        tier3_folds <- fold_change(tier3, var1)
+    if (nrow(nn) > 0) {
+        wilcox_res <- run_wilcox(nn, var1)
+        nn_folds <- fold_change(nn, var1)
 
-        wilcox_res <- cbind(wilcox_res, tier3_folds)
+        wilcox_res <- cbind(wilcox_res, nn_folds)
         write.csv(wilcox_res, "wilcox_results.csv")
     }
     cat("Done.")

@@ -1,5 +1,5 @@
 ---
-title: "normtest workflow"
+title: "two group workflow"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{normtest workflow}
@@ -14,13 +14,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-First, we must load the package.
+## Start by loading the normtest package
 
 ```{r setup}
 library(normtest)
 ```
 
-# Standard Workflow
+# Two Group Workflow
 What follows in this vignette is a standard workflow for using the normtest package to analyze data from
 only two groups.
 While it is possible to input raw data, it is recommended to use preprocessed, normalized, and cleaned
@@ -55,9 +55,9 @@ sample_info
 
 Now we are ready to run the analysis. The two_group_rui function will run all functions applicable to the 
 dataset, and will create three .csv files in your current directory, "t_test_results.csv", "two_group_welch_results.csv", 
-and "wilcox_results.csv". Note that any files with these names will be overwritten each time this function is called.
+and "wilcox_results.csv". Note that any files with these names in your current directory will be overwritten each time this function is called.
 Also be aware that the main function will assign three global variables, "tier1", "tier2", and "tier3", which 
-are subsets of the main data object sorted according to the statistical criteria ourlined in the description.
+are subsets of the main data object sorted according to the statistical criteria outlined in the description.
 You could determine how many rows of your data were sorted into each category by doing nrow(tier1), nrow(tier2),
 nrow(tier3). 
 
@@ -71,7 +71,7 @@ Depending on the size of your data, this function could take several minutes to 
 Now your data is ready, it has been sorted and analyzed according to the appropriate criteria. 
 
 From here, the next steps are in your hands. Our next steps are to look for which genes are significantly 
-different between the specified groups.
+different between the specified groups, and we will demonstrate that here. 
 
 We read in each analyzed .csv file and apply the cf function.
 
@@ -92,7 +92,7 @@ head(z)
 
 To identify "differentially expressed genes" (degs), we'll write a small function to make the work a bit easier.
 This function will take one of our results tables, and filter it based on a set p value and fold change, using
-an absolute value. 
+an absolute value. These values default to 0.05 and 1, respectively. 
 ```{r idDEGS, eval = TRUE}
 id_deg <- function(data, p = 0.05, f = 1) {
     degs <- data[data[, 1] < p, ]
@@ -100,8 +100,8 @@ id_deg <- function(data, p = 0.05, f = 1) {
     return(degs)
 }
 ```
- Now we call the function on each of the test results, x, y, and z. Our pvalue cutoff will be 0.05, and our 
- log2FoldChange cutoff will be 1. 
+ 
+ Now we call the function on each of the test results, x, y, and z. We will use the default values.
 
 ```{r DEGS, eval = TRUE}
 x_degs <- id_deg(x)
@@ -125,6 +125,43 @@ nrow(degs)
 head(degs)
 ```
 
-We have now identified differentially expressed genes and conclude this workflow. 
+We have now identified 46 differentially expressed genes. 
+
+We'll also demonstrate how you could make a heatmap using this data. Right now, we have pvalues
+and fold changes for our degs, but it likely makes more sense for us to plot the actual counts for 
+these genes. Since we only have 46 degs, we'll use them all. 
+
+We'll use pheatmap.
+
+```{r eval = TRUE}
+library(pheatmap)
+```
+
+Then we need to take our degs object and align it with the counts for those genes. 
+
+```{r eval = TRUE}
+#take the gene names from genes
+degs_names <- rownames(degs)
+#and get those genes from the counts table
+degs_counts <- counts[degs_names, ]
+head(degs_counts)
+```
+
+
+To make the heatmap look a bit nicer, we'll use the sample_info table to annotate it. 
+We're also going to do a log transform of the counts to make the differences easier to see. 
+
+```{r eval = TRUE}
+#take log10 of each value in deg_counts + 1 to account for any entries that are zero 
+degs_counts <- log10(degs_counts + 1)
+#we have to change the sample_info sample column to be rownames
+sample_info <- cf(sample_info)
+```
+
+This is how we like our heatmaps, but you can do it any way you like. 
+```{r fig.height=6, fig.width=6}
+pheatmap(degs_counts, cluster_cols = FALSE, annotation_col = sample_info, scale = "row", fontsize = 6)
+```
+
 
 

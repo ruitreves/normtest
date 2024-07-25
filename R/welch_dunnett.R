@@ -56,7 +56,7 @@ run_dunnett <- function(my_data, var1) {
         counter <- 1
         for (a in 1:length(cn)) {
             for (b in 1:length(rn)) {
-                colnames(pvals)[counter] <- paste(rn[b], cn[a], sep = "-vs-")
+                colnames(pvals)[counter] <- paste(cn[a], rn[b], sep = "_vs_")
                 counter <- counter + 1
             }
         }
@@ -68,7 +68,7 @@ run_dunnett <- function(my_data, var1) {
             cat(paste("\r", "Dunnett T3 test ", per, "% done...", sep=""))
         }
         else if (i == nrow(my_data)) {
-            cat(paste("\r", "Dunnett T3 test 100% done", sep = ""))
+            cat(paste("\r", "DunnettT3 test 100% done", sep = ""))
         }
     }
     rownames(dunnett_res) <- rownames(my_data)

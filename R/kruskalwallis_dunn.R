@@ -84,6 +84,7 @@ run_dunn <- function(my_data, var1) {
 
     colnames(dunn_res) <- col_name_list
     colnames(dunn_res) <- gsub(" - ", "_vs_", colnames(dunn_res))
+    colnames(dunn_res) <- paste0("Pval_", colnames(dunn_res))
 
     cat("\n")
 

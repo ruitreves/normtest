@@ -9,6 +9,11 @@
 
 p.adjustment.methods <- c("none","bonferroni","sidak","holm","hs","hochberg","bh","by")
 
+# This function was altered from its original form by Rui Treves on 6/20/24 the changes are as follows:
+#   1. Line 630 "cat("\n")" has been commented out
+#  2. Lines 762 - 770 have been wrapped into the if statement if (table == TRUE | kw == TRUE)
+#' Dunns multicomparison test from dunn.test library
+#' @export 
 Adunn.test <- function(x=NA, g=NA, method=p.adjustment.methods, kw=TRUE, label=TRUE, wrap=FALSE, table=TRUE, list=FALSE, rmc=FALSE, alpha=0.05, altp=FALSE) {
 
   # FUNCTIONS

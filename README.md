@@ -1,5 +1,5 @@
 # normtest
-This package was developed to address the need for a more robust statistical framework to process RNA sequencing data. 
+This package was developed to provide an alternative method of analyzing RNA-sequencing data in a high throughput way.  
 
 ## Introduction
 Certain experiemental designs are often suited to the preplanned statistical analysis that will take place after data is collected. It is vital, however, to apply the appropriate statistical techniques in order to ensure the validity of the results. The purpose of this package is to provide a high throughput way to sort data based on which tests are appropriate, and carry out those tests. 

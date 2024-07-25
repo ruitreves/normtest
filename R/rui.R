@@ -8,40 +8,44 @@
 
 rui <- function(my_data, var1, var2, var3) {
 
-    test_norm(my_data, var1, var2)
+    res <- test_norm(my_data, var1, var2)
+    
+    ne <- res[[1]]
+    nu <- res[[2]]
+    nn <- res[[3]]
 
     ########
-    ########    tier1
+    ########    ne
     ########
+    
 
+    if (nrow(ne) > 0) {
+        my_anova <- run_anova(ne, var1, var2)
 
-    if (nrow(tier1) > 0) {
-        my_anova <- run_anova(tier1, var1, var2)
+        tukey_res <- run_tukey(ne, var3)
 
-        tukey_res <- run_tukey(tier1, var3)
+        fc_ne <- fold_change(ne, var3)
 
-        fc_tier1 <- fold_change(tier1, var3)
-
-        tukey_res <- combine_fc_pvals(tukey_res, fc_tier1)
+        tukey_res <- combine_fc_pvals(tukey_res, fc_ne)
         colnames(my_anova) <- c(substitute(var1), substitute(var2), "interaction")
         anova_results <- cbind(my_anova, tukey_res)
         write.csv(anova_results, "anova_results.csv")
     }
 
     ########
-    ########    tier2
+    ########    nu
     ########
 
-    if (nrow(tier2 > 0)) {    
-        check_means(tier2, var3)
+    if (nrow(nu > 0)) {    
+        check_means(nu, var3)
 
-        welch_res <- run_welch(tier2, var3)
+        welch_res <- run_welch(nu, var3)
 
-        dunnett_res <- run_dunnett(tier2, var3)
+        dunnett_res <- run_dunnett(nu, var3)
 
-        fc_tier2 <- fold_change(tier2, var3)
+        fc_nu <- fold_change(nu, var3)
 
-        dunnett_res <- combine_fc_pvals(dunnett_res, fc_tier2)
+        dunnett_res <- combine_fc_pvals(dunnett_res, fc_nu)
 
         welch_results <- cbind(welch_res, dunnett_res)
 
@@ -49,22 +53,20 @@ rui <- function(my_data, var1, var2, var3) {
     }
 
     ########
-    ########    tier3
+    ########    nn
     ########
 
-    
+    if (nrow(nn) > 0) {        
+        krusk_res <- run_kruskal(nn, var3)
 
-    if (nrow(tier3) > 0) {        
-        krusk_res <- run_kruskal(tier3, var3)
-
-        #dunn_res <- run_dunn(tier3, var3)
+        #dunn_res <- run_dunn(nn, var3)
 
         #using altered dunn d.test()
-        dunn_res <- run_dunn(tier3, var3)
+        dunn_res <- run_dunn(nn, var3)
 
-        fc_tier3 <- fold_change(tier3, var3)
+        fc_nn <- fold_change(nn, var3)
 
-        dunn_res <- combine_fc_pvals(dunn_res, fc_tier3)
+        dunn_res <- combine_fc_pvals(dunn_res, fc_nn)
 
         KW_results <- cbind(krusk_res, dunn_res)
 

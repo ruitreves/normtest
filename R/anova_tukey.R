@@ -55,8 +55,14 @@ run_tukey <- function(my_data, var1) {
         }
     }
     x <- colnames(test_tukey)
-    x <- paste("Pval_", x, sep = "")
-    colnames(test_tukey) <- x
+    s <- strsplit(x, split = "-")
+    srev <- c()
+    for (i in 1:length(s)) {
+        srev[[i]] <- rev(s[[i]])
+        srev[[i]] <- paste(srev[[i]], collapse = "_vs_")
+    }
+    y <- paste("Pval_", srev, sep = "")
+    colnames(test_tukey) <- y
 
     cat("\n")
     return(test_tukey)

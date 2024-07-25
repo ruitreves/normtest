@@ -14,7 +14,7 @@ test_norm(my_data, var1, var2)
 \item{var2}{A column from a sample_info table used to define which column names of my_data go with var2}
 }
 \value{
-Three dataframes tier1, tier2, tier3 assigned to global environment
+Three dataframes ne, nu, nn assigned to global environment
 }
 \description{
 For at least 3 groups. Test and sort data by distribution and variance equality
