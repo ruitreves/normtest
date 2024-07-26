@@ -55,22 +55,19 @@ sample_info
 
 Now we are ready to run the analysis. The two_group_rui function will run all functions applicable to the 
 dataset, and will create three .csv files in your current directory, "t_test_results.csv", "two_group_welch_results.csv", 
-and "wilcox_results.csv". Note that any files with these names in your current directory will be overwritten each time this function is called.
-Also be aware that the main function will assign three global variables, "tier1", "tier2", and "tier3", which 
-are subsets of the main data object sorted according to the statistical criteria outlined in the description.
-You could determine how many rows of your data were sorted into each category by doing nrow(tier1), nrow(tier2),
-nrow(tier3). 
+and "wilcox_results.csv". Note that any files with these names in your current directory will be overwritten each time this function 
+is called.
 
 We call the main function:
 ```{r callMain, eval = FALSE}
 two_group_rui(counts, sample_info$group)
 ```
 
-Depending on the size of your data, this function could take several minutes to run. 
+Depending on the size of the input data, this function could take several minutes to run. 
 
-Now your data is ready, it has been sorted and analyzed according to the appropriate criteria. 
+The data has now been sorted and analyzed according to the appropriate criteria. 
 
-From here, the next steps are in your hands. Our next steps are to look for which genes are significantly 
+From here, the next steps are in the hands of the reader. Our next steps are to look for which genes are significantly 
 different between the specified groups, and we will demonstrate that here. 
 
 We read in each analyzed .csv file and apply the cf function.
@@ -131,7 +128,7 @@ We'll also demonstrate how you could make a heatmap using this data. Right now, 
 and fold changes for our degs, but it likely makes more sense for us to plot the actual counts for 
 these genes. Since we only have 46 degs, we'll use them all. 
 
-We'll use pheatmap.
+We'll use the pheatmap library.
 
 ```{r eval = TRUE}
 library(pheatmap)
@@ -147,7 +144,6 @@ degs_counts <- counts[degs_names, ]
 head(degs_counts)
 ```
 
-
 To make the heatmap look a bit nicer, we'll use the sample_info table to annotate it. 
 We're also going to do a log transform of the counts to make the differences easier to see. 
 
@@ -158,7 +154,7 @@ degs_counts <- log10(degs_counts + 1)
 sample_info <- cf(sample_info)
 ```
 
-This is how we like our heatmaps, but you can do it any way you like. 
+Then we make the heatmap. 
 ```{r fig.height=6, fig.width=6}
 pheatmap(degs_counts, cluster_cols = FALSE, annotation_col = sample_info, scale = "row", fontsize = 6)
 ```

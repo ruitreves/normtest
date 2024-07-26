@@ -64,7 +64,7 @@ The groups variable must be a linear combination of the other two variables (in 
 In other words, the group variable must describe the distribution of the other two variables.
 group-d1t1 describes samples that got diet1 and treatment1, group-d2t1 describes samples that got diet2 and treatment1, etc.
 The reason for this is that the multicomparison tests used in the analysis are not able to consider two 
-factors, but rather only one. The statistical criteria used to sort the data into one of the three tiers 
+factors, but rather only one. The statistical criteria used to sort the data into one of the three sets 
 relies on the group distributions as defined by the first two variables. In order for these criteria to 
 remain satisfied when performing the multicomparison tests, the group variable must follow this convention. 
 
@@ -106,28 +106,45 @@ head(x)
 
 This file contains data from every comparison, and it is unwieldy to consider every
 comparison at once.
-We'll trim it down to make it easier. 
+
+For this reason normtest includes the chop() function. This function can take one of the multi group output files, split it up into 
+separate comparisons, and identify significant results by pvalue and fold change. To use it, we first must remove the columns not 
+pertaining to a specific comparison from x. This is the first three columns.
 
 ```{r xTrim, eval = TRUE}
-x1 <- x[, 1:3]
+x1 <- x[, -c(1:3)]
 head(x1)
 ```
-Now x1 shows only the pvalues for the first two experiemental factors and their interaction.
-Suppose we are most interested in the interaction, and wish to see only pvalues significant 
-at the alpha = 0.05 level. 
+Now x only contains pvalues and fold changes for each head-to-head comparision. Now we apply chop, the default pvalue cut off is 0.05, and 
+the default absolute value fold change is 1.
 
-```{r eval = TRUE}
-intx <- x1[x1[, 3] < 0.05, ]
-head(intx)
+```{r chop, eval = TRUE}
+x_chopped <- chop(x1)
 ```
 
-We could now use these rows with significant interaction to index the whole anova_results
-table and get more info about the comparisons. 
+Note that x_chopped is now a list with two elements, both of which are also lists. The first element of x_chopped is a list of all the 
+individual comparisons, which is our case is six. The second element of x_chopped is a list of only significant genes from each of the six 
+comparisons. These are in the same order as the columns of x.
 
-```{r eval = TRUE}
-intx_names <- rownames(intx)
-big_intx <- x[intx_names, ]
-head(big_intx)
+```{r listLengths}
+length(x_chopped)
+anova_res <- x_chopped[[1]]
+length(anova_res)
+anova_sigs <- x_chopped[[2]]
+length(anova_sigs)
+```
+
+Suppose we're interested in the d1t2_vs_d2t2 comparison. Since this is the last comparison in x, it will also be the last comparison in res 
+and sig. 
+
+```{r getComp}
+#this is the results for every gene
+anova_comp <- anova_res[[6]]
+head(anova_comp)
+#this is the results only for genes we consider significant
+anova_comp_sig <- anova_sigs[[6]]
+nrow(anova_comp_sig)
+head(anova_comp_sig)
 ```
 
 Lets consider another use case. We'll use the KW_results file this time.
@@ -137,14 +154,22 @@ kw <- read.csv("KW_results.csv")
 kw <- cf(kw)
 ```
  
-Suppose we are interested in looking at the comparison d1t1_vs_d2t2. We'll get just those
-columns from the kw table. 
+Suppose we are interested in looking at the comparison d1t1_vs_d2t2. We'll use chop to get it, but we also could just do: 
 
-```{r eval = TRUE}
+```{r eval = FALSE}
 kw_comp <- kw[, 6:7]
-head(kw_comp)
 ```
 
+```{r KWchop}
+#first remove the column that doesnt pertain to a specific comparison, this is only the first column for kw_results.
+kw1 <- kw[, -1]
+kw_chop <- chop(kw1)
+kw_res <- kw_chop[[1]]
+kw_sig <- kw_chop[[2]]
+#and the d1t1_vs_d2t2 is third comparison
+kw_comp <- kw_res[[3]]
+head(kw_comp)
+```
 Then, maybe we want to see which fold changes are the largest (considering absolute values). 
 
 ```{r eval = TRUE}
@@ -162,56 +187,36 @@ ordered_kw <- ordered_kw[order(abs(ordered_kw[, 2]), decreasing = TRUE), ]
 head(ordered_kw)
 ```
 
-Now these values are more useful to us. Be aware that here we only looked at a subset of the data;
-those that were suited to the Kruskal-Wallis test. To be thorough in our analysis we should look 
+Now these values are more useful to us. Be aware that here we only looked at a subset of the d1t1_vs_d2t2 comparision;
+the part that was suited to the Kruskal-Wallis test. To be thorough in our analysis we should look 
 at the d1t1_vs_d2t2 comparison across all three results files.
 
-We'll do that now, and then we'll use the results to create a heatmap. We'll use the pheatmap library.
+We'll do that now, and then we'll use the results to create a heatmap of the 60 genes with largest fold changes and pvalues < 0.05. 
+We'll use the pheatmap library.
 
 ```{r}
 library(pheatmap)
 ```
 
 ```{r eval = TRUE}
-#read in anova file and cf
-anova_results <- read.csv("anova_results.csv")
-anova_results <- cf(anova_results)
-#read in welch results and cf
-welch_results <- read.csv("multi_group_welch_results.csv")
-welch_results <- cf(welch_results)
-
-#get only the d1t1_vs_d2t2 comparison 
-anova_comp <- anova_results[, 8:9]
-welch_comp <- welch_results[, 6:7]
-
-#remove infinity values from the fold change column and order by largest to smallest
-anova_comp <- anova_comp[is.finite(anova_comp[, 2]), ]
-ordered_anova <- anova_comp[order(abs(anova_comp[, 2]), decreasing = TRUE), ]
-
-welch_comp <- welch_comp[is.finite(welch_comp[, 2]), ]
-ordered_welch <- welch_comp[order(abs(welch_comp[, 2]), decreasing = TRUE), ]
-
-#anova results
-head(ordered_anova)
-#welch results
-head(ordered_welch)
+#we already have the kw comparison, so now we need the correct anova comparison and welch
+anova_comp <- anova_sigs[[3]]
+we <- read.csv("multi_group_welch_results.csv")
+we <- cf(we)
+#apply chop
+we1 <- we[, -1]
+we_chopped <- chop(we1)
+welch_sig <- we_chopped[[2]]
+welch_comp <- welch_sig[[3]]
+head(welch_comp)
 ```
 
-Now we filter out rows where the pvalue is larger than 0.05.
+Now we'll put the comparisons from the three different tests together into one dataframe, and sort it by fold change.
 
 ```{r eval = TRUE}
-ordered_kw <- ordered_kw[ordered_kw[, 1] < 0.05, ]
-ordered_anova <- ordered_anova[ordered_anova[, 1] < 0.05, ]
-ordered_welch <- ordered_welch[ordered_welch[, 1] < 0.05, ]
-```
-
-Now we'll put these three results tables all together using the rbind function. Note that this 
-will disrupt our ordering process from before, so we'll have to do it again. 
-
-```{r} 
-res <- rbind(ordered_anova, ordered_kw, ordered_welch)
-res <- res[order(res[, 2], decreasing = TRUE), ]
-head(res)
+total <- rbind(anova_comp, welch_comp, kw_comp)
+total <- total[order(total[, 2], decreasing = TRUE), ]
+head(total)
 ```
 
 And now we can make our heatmap. We want to plot the count data for these genes which we found to 
@@ -219,14 +224,14 @@ be significant at alpha = 0.05 and which have the largest fold changes.
 
 ```{r}
 #get the count data for these genes
-res_names <- rownames(res)
-res_counts <- counts[res_names, ]
-head(res_counts)
+total_names <- rownames(total)
+total_counts <- counts[total_names, ]
+head(total_counts)
 ```
 
 ```{r fig.height=6, fig.width=6}
 #take log10 of each data point, adding 1 to account for any zeros
-dat <- log10(res_counts + 1)
+dat <- log10(total_counts + 1)
 #we use part of our sample_info object to annotate the heatmap
 anno <- cf(sample_info[, c(1,4)])
 #make heatmap using top 60 genes by fold change

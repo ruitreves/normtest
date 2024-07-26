@@ -54,15 +54,26 @@ mg_sample_info
 Then you can call test_norm:
 
 ```{r eval = FALSE}
-test_norm(mg_counts, mg_sample_info$diet, mg_sample_info$treatment)
+res <- test_norm(mg_counts, mg_sample_info$diet, mg_sample_info$treatment)
 ```
 
-This will create tier1, tier2, and tier3 in your r environment, and you can use them as 
-you like. 
+Then you can access the three dataframes by: 
+
+```{r}
+#normal equal variance
+ne <- res[[1]]
+head(ne)
+#normal nonequal variance
+nu <- res[[2]]
+head(nu)
+#nonnormal
+nn <- res[[3]]
+head(nn)
+```
 
 In the case of two groups: 
 
-You'll again have some data:
+You will again have some data:
 
 ```{r eval = TRUE}
 tg_counts <- read.csv("twogroup_counts.csv")
@@ -81,11 +92,10 @@ tg_sample_info
 Then you can call two_group_test_norm:
 
 ```{r eval = FALSE}
-two_group_test_norm(tg_counts, tg_sample_info$group)
+res <- two_group_test_norm(tg_counts, tg_sample_info$group)
 ```
 
-This will again create tier1, tier2, and tier3 in your r environment, and you can use them as 
-you like. 
+And you can access the individual dataframe exactly the same as above.
 
 ## Example 2: You already know your data to be suitable for a _____ test and you only want to do that test and maybe the multi comparison test.
 

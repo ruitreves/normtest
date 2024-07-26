@@ -3,7 +3,7 @@
 #' @param var1 A column from a sample_info table used to define which column names of my_data go with var1
 #' @param var2 A column from a sample_info table used to define which column names of my_data go with var2
 #' 
-#' @return Three dataframes ne, nu, nn assigned to global environment
+#' @return A list of three dataframes ne, nu, nn
 #' @export
 
 test_norm <- function(my_data, var1, var2) {
