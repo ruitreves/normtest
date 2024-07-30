@@ -5,7 +5,7 @@
 \title{Produces a dummy data set from a normal distribution and sample_info object.}
 \usage{
 dummy_data(
-  group_min = 3,
+  group_min = 2,
   group_max = 20,
   dim_min = 1,
   dim_max = 50,

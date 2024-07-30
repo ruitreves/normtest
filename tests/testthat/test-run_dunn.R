@@ -31,9 +31,6 @@ for (g in grp_list) {
 dunn_test <- dunn_test[, match(col_names, dunn$comparisons)]
 colnames(dunn_test) <- col_names
 
-#i attempt to delicately toe the line between rewriting the same code i wish to test,
-#and writing code that functions the same way.
-
 test_that("dunn works", {
   for (i in 1:nrow(dunn_test)) {
     for (j in 1:ncol(dunn_test)) {

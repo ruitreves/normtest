@@ -59,16 +59,16 @@ res <- test_norm(mg_counts, mg_sample_info$diet, mg_sample_info$treatment)
 
 Then you can access the three dataframes by: 
 
-```{r}
+```{r, eval = FALSE}
 #normal equal variance
 ne <- res[[1]]
-head(ne)
+
 #normal nonequal variance
 nu <- res[[2]]
-head(nu)
+
 #nonnormal
 nn <- res[[3]]
-head(nn)
+
 ```
 
 In the case of two groups: 
@@ -95,7 +95,7 @@ Then you can call two_group_test_norm:
 res <- two_group_test_norm(tg_counts, tg_sample_info$group)
 ```
 
-And you can access the individual dataframe exactly the same as above.
+And you can access the individual dataframes exactly the same as above.
 
 ## Example 2: You already know your data to be suitable for a _____ test and you only want to do that test and maybe the multi comparison test.
 

@@ -98,7 +98,7 @@ id_deg <- function(data, p = 0.05, f = 1) {
 }
 ```
  
- Now we call the function on each of the test results, x, y, and z. We will use the default values.
+ Now we call the function on each of the test results, x, y, and z. We will use the default p and f values.
 
 ```{r DEGS, eval = TRUE}
 x_degs <- id_deg(x)

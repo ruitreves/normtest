@@ -223,6 +223,8 @@ And now we can make our heatmap. We want to plot the count data for these genes 
 be significant at alpha = 0.05 and which have the largest fold changes. 
 
 ```{r}
+#filter genes with only significant pvalues
+total <- total[total[, 1] < 0.05, ]
 #get the count data for these genes
 total_names <- rownames(total)
 total_counts <- counts[total_names, ]

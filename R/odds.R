@@ -189,7 +189,7 @@ chop <- function(x, p = 0.05, f = 1) {
 #' @return A list, element one is the randomly generated data frame, element two is sample_info. Access with double brackets: [[1]], [[2]].
 #' @export 
 
-dummy_data <- function(group_min = 3, group_max = 20, dim_min = 1, dim_max = 50, param_min = 0, param_max = 20) {
+dummy_data <- function(group_min = 2, group_max = 20, dim_min = 1, dim_max = 50, param_min = 0, param_max = 20) {
     group_num <- floor(stats::runif(1, min = group_min, max = group_max))
 
     group_names <- c()
