@@ -2,15 +2,18 @@
 #' @param my_data a data object
 #' @param var1 a list that points column names of my_data to the factors of the experiment
 #' @param var2 a list that points column names of my_data to the factors of the experiment
+#' @param padj logical, whether to add p adjust values or not. Calculated by p.adjust function with method = "BH"
 #' @return a data object containing p values for var1, var2, and interaction of var1 * var2 for each row of my_data, computed by anova
 #' @export
 
-run_anova <- function(my_data, var1, var2) {
+run_anova <- function(my_data, var1, var2, padj = FALSE) {
     my_anova <- NULL
     for (i in 1:nrow(my_data)) {
-        resu <- NULL
-        resu <- t(as.data.frame(stats::anova(stats::lm(unlist(my_data[i,]) ~ var1 * var2))[1:3,5]))
-        my_anova <- as.data.frame(rbind(my_anova, resu))
+        #res <- t(as.data.frame(stats::anova(stats::lm(unlist(my_data[i,]) ~ var1 * var2))[1:3,5]))
+        mod <- stats::lm(unlist(my_data[i, ]) ~ var1 * var2)
+        a <- stats::anova(mod)
+        res <- t(as.data.frame(a[1:3, 5]))
+        my_anova <- as.data.frame(rbind(my_anova, res))
 
         #this is a just progess tracker for the function
         if (i%%100==0) {
@@ -21,8 +24,20 @@ run_anova <- function(my_data, var1, var2) {
             cat(paste("\r", "anova ", "100% done", sep = ""))
         }
     }
-
+    colnames(my_anova) <- c(substitute(var1), substitute(var2), "interaction")
     rownames(my_anova) <- rownames(my_data)
+
+    if (padj == TRUE) {
+        var1_padj <- as.data.frame(stats::p.adjust(my_anova[, 1], method = "BH"))
+        var2_padj <- as.data.frame(stats::p.adjust(my_anova[, 2], method = "BH"))
+        intx_padj <- as.data.frame(stats::p.adjust(my_anova[, 3], method = "BH"))
+        my_anova <- cbind(my_anova, var1_padj, var2_padj, intx_padj)
+        colnames(my_anova) <- c(substitute(var1), substitute(var2), "interaction",
+                                paste0(deparse(substitute(var1)), "_padj"), paste0(deparse(substitute(var2)), "_padj"),
+                                "interaction_padj")
+        my_anova <- my_anova[, c(1, 4, 2, 5, 3, 6)]
+    }
+
     cat("\n")
     return(my_anova)
 }

@@ -4,12 +4,14 @@
 \alias{run_kruskal}
 \title{Run Kruskal-Wallis test on each row of my_data}
 \usage{
-run_kruskal(my_data, var1)
+run_kruskal(my_data, var1, padj = FALSE)
 }
 \arguments{
 \item{my_data}{a data object}
 
 \item{var1}{a list that points column names of my_data to the factors of the experiment}
+
+\item{padj}{logical, whether to add p adjust values or not. Calculated by p.adjust function with method = "BH"}
 }
 \value{
 a data object with a p value for each row of my_data, computed using kruskal.test

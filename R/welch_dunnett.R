@@ -1,11 +1,12 @@
 #'Runs a Welch t-test on each row of my_data
 #' @param my_data a data object
 #' @param var1 a list that points column names of my_data to the factors of the experiment
+#' @param padj logical, whether to add p adjust values or not. Calculated by p.adjust function with method = "BH"
 #' @return a data object with a p value for each row of my_data, computed using welch.test
 #' @export
 
 #Welch test
-run_welch <- function(my_data, var1) {
+run_welch <- function(my_data, var1, padj = FALSE) {
     welch_res <- NULL
     for (i in 1:nrow(my_data)) {
         welch <- onewaytests::welch.test(unlist(my_data[i, ]) ~ var1, as.data.frame(my_data[i,]), verbose=F)
@@ -24,12 +25,18 @@ run_welch <- function(my_data, var1) {
 
     rownames(welch_res) <- rownames(my_data)
     colnames(welch_res) <- "Pval"
-    welch_res <- as.data.frame(welch_res)
+
+    if (padj == TRUE) {
+        welch_padj <- as.data.frame(stats::p.adjust(welch_res[, 1], method = "BH"))
+        welch_res <- cbind(welch_res, welch_padj)
+        colnames(welch_res) <- c("Pval", "Padj")
+    }
 
     cat("\n")
 
     return(welch_res)
 }
+
 
 #'Runs DunnettT3 multi comparison test on each row of my_data
 #' @param my_data a data object

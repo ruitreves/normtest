@@ -4,6 +4,7 @@
 # This function was altered from its original form by Rui Treves on 6/20/24 the changes are as follows:
 #   1. Line 630 "cat("\n")" has been commented out
 #  2. Lines 762 - 770 have been wrapped into the if statement if (table == TRUE | kw == TRUE)
+
 #' Dunns multicomparison test from dunn.test library
 #' @export 
 

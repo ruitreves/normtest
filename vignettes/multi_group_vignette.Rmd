@@ -84,10 +84,10 @@ Notice how to group variables do not "line up with" or "describe" the distributi
 treatment variables.
 
 Now that we have our sample_info object and our counts ready, we can run the analysis. 
-We can use the main function "rui" to call all the appropriate functions in succession. 
+We can use the main function "multigroup_main" to call all the appropriate functions in succession. 
 
 ```{r callMain, eval = FALSE}
-rui(counts, sample_info$diet, sample_info$treatment, sample_info$group)
+multigroup_main(counts, sample_info$diet, sample_info$treatment, sample_info$group)
 ```
 
 This will write three .csv files in the current directory, "anova_results.csv", "multi_group_welch_results.csv", 
@@ -122,9 +122,9 @@ the default absolute value fold change is 1.
 x_chopped <- chop(x1)
 ```
 
-Note that x_chopped is now a list with two elements, both of which are also lists. The first element of x_chopped is a list of all the 
-individual comparisons, which is our case is six. The second element of x_chopped is a list of only significant genes from each of the six 
-comparisons. These are in the same order as the columns of x.
+Note that x_chopped is now a list with two elements, both of which are also lists. The first element of x_chopped is a list of dataframes of 
+all the individual comparisons, which in our case is six. The second element of x_chopped is also a list of dataframes, containing only 
+significant genes from each of the six comparisons. These are in the same order as the columns of x.
 
 ```{r listLengths}
 length(x_chopped)
@@ -134,8 +134,8 @@ anova_sigs <- x_chopped[[2]]
 length(anova_sigs)
 ```
 
-Suppose we're interested in the d1t2_vs_d2t2 comparison. Since this is the last comparison in x, it will also be the last comparison in res 
-and sig. 
+Suppose we're interested in the d1t2_vs_d2t2 comparison. Since this is the last comparison in x, it will also be the last comparison in 
+anova_res and anova_sigs. 
 
 ```{r getComp}
 #this is the results for every gene

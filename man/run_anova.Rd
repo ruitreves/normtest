@@ -4,7 +4,7 @@
 \alias{run_anova}
 \title{Runs a two way anova based on var1 * var2 for each row of my_data}
 \usage{
-run_anova(my_data, var1, var2)
+run_anova(my_data, var1, var2, padj = FALSE)
 }
 \arguments{
 \item{my_data}{a data object}
@@ -12,6 +12,8 @@ run_anova(my_data, var1, var2)
 \item{var1}{a list that points column names of my_data to the factors of the experiment}
 
 \item{var2}{a list that points column names of my_data to the factors of the experiment}
+
+\item{padj}{logical, whether to add p adjust values or not. Calculated by p.adjust function with method = "BH"}
 }
 \value{
 a data object containing p values for var1, var2, and interaction of var1 * var2 for each row of my_data, computed by anova

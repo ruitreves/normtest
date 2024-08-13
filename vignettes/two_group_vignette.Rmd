@@ -53,14 +53,14 @@ sample_info <- data.frame(sample = colnames(counts), group = c(rep("GroupX", 4),
 sample_info
 ```
 
-Now we are ready to run the analysis. The two_group_rui function will run all functions applicable to the 
+Now we are ready to run the analysis. The twogroup_main function will run all functions applicable to the 
 dataset, and will create three .csv files in your current directory, "t_test_results.csv", "two_group_welch_results.csv", 
 and "wilcox_results.csv". Note that any files with these names in your current directory will be overwritten each time this function 
 is called.
 
 We call the main function:
 ```{r callMain, eval = FALSE}
-two_group_rui(counts, sample_info$group)
+twogroup_main(counts, sample_info$group)
 ```
 
 Depending on the size of the input data, this function could take several minutes to run. 

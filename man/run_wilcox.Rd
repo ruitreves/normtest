@@ -4,12 +4,14 @@
 \alias{run_wilcox}
 \title{Runs two sided Wilcoxon Rank Sum test on each row of my_data and reports the p value, computed by wilcox.test}
 \usage{
-run_wilcox(my_data, var1)
+run_wilcox(my_data, var1, padj = FALSE)
 }
 \arguments{
 \item{my_data}{a data object}
 
 \item{var1}{list that points column names of my_data to the factors of the experiment}
+
+\item{padj}{logical, whether to add p adjust values or not. Calculated by p.adjust function with method = "BH"}
 }
 \description{
 Runs two sided Wilcoxon Rank Sum test on each row of my_data and reports the p value, computed by wilcox.test

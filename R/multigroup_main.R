@@ -6,7 +6,7 @@
 #' @export
 
 
-rui <- function(my_data, var1, var2, var3) {
+multigroup_main <- function(my_data, var1, var2, var3, padj = FALSE) {
 
     res <- test_norm(my_data, var1, var2)
     
@@ -20,14 +20,18 @@ rui <- function(my_data, var1, var2, var3) {
     
 
     if (nrow(ne) > 0) {
-        my_anova <- run_anova(ne, var1, var2)
+        my_anova <- run_anova(ne, var1 = var1, var2 = var2, padj)
+
+        if (padj == TRUE) {
+            colnames(my_anova) <- c(substitute(var1), paste0(deparse(substitute(var1)), "_padj"), substitute(var2),
+                                    paste0(deparse(substitute(var2)), "_padj"), "interaction", "interaction_padj")
+        }
 
         tukey_res <- run_tukey(ne, var3)
 
         fc_ne <- fold_change(ne, var3)
 
         tukey_res <- combine_fc_pvals(tukey_res, fc_ne)
-        colnames(my_anova) <- c(substitute(var1), substitute(var2), "interaction")
         anova_results <- cbind(my_anova, tukey_res)
         write.csv(anova_results, "anova_results.csv")
     }
@@ -39,7 +43,7 @@ rui <- function(my_data, var1, var2, var3) {
     if (nrow(nu > 0)) {    
         check_means(nu, var3)
 
-        welch_res <- run_welch(nu, var3)
+        welch_res <- run_welch(nu, var3, padj)
 
         dunnett_res <- run_dunnett(nu, var3)
 
@@ -57,7 +61,7 @@ rui <- function(my_data, var1, var2, var3) {
     ########
 
     if (nrow(nn) > 0) {        
-        krusk_res <- run_kruskal(nn, var3)
+        krusk_res <- run_kruskal(nn, var3, padj)
 
         #dunn_res <- run_dunn(nn, var3)
 
@@ -72,5 +76,4 @@ rui <- function(my_data, var1, var2, var3) {
 
         write.csv(KW_results, "KW_results.csv")
     }
-
 }

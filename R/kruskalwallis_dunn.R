@@ -1,11 +1,12 @@
 #'Run Kruskal-Wallis test on each row of my_data
 #' @param my_data a data object
 #' @param var1 a list that points column names of my_data to the factors of the experiment
+#' @param padj logical, whether to add p adjust values or not. Calculated by p.adjust function with method = "BH"
 #' @return a data object with a p value for each row of my_data, computed using kruskal.test
 #' @export
 
 #Kruskal-Wallis test
-run_kruskal <- function(my_data, var1) {
+run_kruskal <- function(my_data, var1, padj = FALSE) {
     
     krusk_res <- NULL
     for (i in 1:nrow(my_data)) {
@@ -27,7 +28,13 @@ run_kruskal <- function(my_data, var1) {
     }
 
     rownames(krusk_res) <- rownames(my_data)
-    colnames(krusk_res) <- "KW_Pval"
+    colnames(krusk_res) <- "Pval"
+
+    if (padj == TRUE) {
+        k_padj <- as.data.frame(stats::p.adjust(krusk_res[, 1], method = "BH"))
+        krusk_res <- cbind(krusk_res, k_padj)
+        colnames(krusk_res) <- c("Pval", "Padj")
+    }
 
     cat("\n")
 
