@@ -26,6 +26,9 @@ multigroup_main <- function(my_data, var1, var2, var3, padj = FALSE) {
             colnames(my_anova) <- c(substitute(var1), paste0(deparse(substitute(var1)), "_padj"), substitute(var2),
                                     paste0(deparse(substitute(var2)), "_padj"), "interaction", "interaction_padj")
         }
+        else {
+            colnames(my_anova) <- c(substitute(var1), substitute(var2), "interaction")
+        }
 
         tukey_res <- run_tukey(ne, var3)
 
