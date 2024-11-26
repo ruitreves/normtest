@@ -1,9 +1,12 @@
 library(PMCMRplus)
 
+set.seed(112224)
+
 d <- dummy_data(group_max = 6)
 x <- d[[1]]
 sample_info <- d[[2]]
 z <- run_dunnett(x, sample_info$group)
+z <- z[, -ncol(z)]
 
 res <- NULL
 for (i in 1:nrow(x)) {
@@ -24,7 +27,6 @@ colnames(res) <- colnames(z)
 rownames(res) <- rownames(z)
 
 test_that("dunnett works", {
-  skip("skip")
   for (i in 1:nrow(res)) {
     for (j in 1:ncol(res)) {
       expect_equal(res[i, j], z[i, j], tolerance = 0.001)

@@ -2,15 +2,33 @@
 % Please edit documentation in R/twogroup_main.R
 \name{twogroup_main}
 \alias{twogroup_main}
-\title{This function puts together all the two group functions from the package in the correct order.}
+\title{The two group statomatic procedure, pulling together all applicable functions in the correct order. Use this function to analyze a dataset
+with exactly two groups}
 \usage{
-twogroup_main(my_data, var1, padj = FALSE)
+twogroup_main(
+  x,
+  var1,
+  padj = FALSE,
+  write_files = FALSE,
+  file_names = c("ttest_results.csv", "welch_results.csv", "wilcox_results.csv")
+)
 }
 \arguments{
-\item{my_data}{a data object}
+\item{x}{a numeric data.frame}
 
-\item{var1}{a list that points column names of my_data to the factors of the experiment}
+\item{var1}{a list which maps columns of x to experimental factors. Must be exactly 2 factors}
+
+\item{padj}{boolean, whether or not to include Benjamini Hochberg correction. defaults to FALSE}
+
+\item{write_files}{boolean, whether or not to write csv files of the test results instead of returning. Defaults to FALSE}
+
+\item{file_names}{a list of three file names to be used when writing files. Specify as a vector using c(). The first will be the name of the t-test results,
+the second the welch-test results, and the third the wilcox-test results. Only used if write_files = TRUE}
+}
+\value{
+a list containing all test results, fold changes, and subsets of x as sorted by test_norm, unless write_files = TRUE, in which case nothing is returned.
 }
 \description{
-This function puts together all the two group functions from the package in the correct order.
+The two group statomatic procedure, pulling together all applicable functions in the correct order. Use this function to analyze a dataset
+with exactly two groups
 }

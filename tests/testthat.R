@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(normtest)
+library(statomatic)
 
-test_check("normtest")
+test_check("statomatic")

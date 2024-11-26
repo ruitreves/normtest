@@ -32,11 +32,11 @@ for (i in 1:nrow(pass1)) {
 pass2 <- x[pass_lev, ]
 
 test_that("shaprio works", {
-  expect_setequal(pass2, res[[1]])
+  expect_setequal(pass2, unlist(res[[1]]))
 })
 test_that("levene works", {
-  expect_setequal(setdiff(pass1, pass2), res[[2]])
+  expect_setequal(setdiff(pass1, pass2), unlist(res[[2]]))
 })
 test_that("both work", {
-  expect_setequal(setdiff(x, union(pass1, pass2)), res[[3]])
+  expect_setequal(setdiff(x, union(pass1, pass2)), unlist(res[[3]]))
 })

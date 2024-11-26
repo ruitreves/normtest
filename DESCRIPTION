@@ -1,4 +1,4 @@
-Package: normtest
+Package: statomatic
 Title: Sort Data by Distribution and Apply Appropriate Statistical Test in a High Throughput Manner
 Version: 0.0.0.9000
 Authors@R: 
@@ -27,7 +27,9 @@ Imports:
     onewaytests,
     pheatmap,
     PMCMRplus,
-    stats
+    S4Vectors,
+    stats,
+    SummarizedExperiment
 Suggests: 
     knitr,
     rmarkdown,

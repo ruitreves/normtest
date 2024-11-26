@@ -1,40 +1,43 @@
-#' This function puts together all the two group functions from the package in the correct order.
-#' @param my_data a data object
-#' @param var1 a list that points column names of my_data to the factors of the experiment
+#' The two group statomatic procedure, pulling together all applicable functions in the correct order. Use this function to analyze a dataset 
+#' with exactly two groups
+#' @param x a numeric data.frame
+#' @param var1 a list which maps columns of x to experimental factors. Must be exactly 2 factors
+#' @param padj boolean, whether or not to include Benjamini Hochberg correction. defaults to FALSE
+#' @param write_files boolean, whether or not to write csv files of the test results instead of returning. Defaults to FALSE
+#' @param file_names a list of three file names to be used when writing files. Specify as a vector using c(). The first will be the name of the t-test results,
+#' the second the welch-test results, and the third the wilcox-test results. Only used if write_files = TRUE
+#' @return a list containing all test results, fold changes, and subsets of x as sorted by test_norm, unless write_files = TRUE, in which case nothing is returned.
 #' @export
-
-twogroup_main <- function(my_data, var1, padj = FALSE) {
-    #sort data into normal and equal variance, normal and nonequal variances,
-    #and nonnormal.
-    res <- two_group_test_norm(my_data, var1)
-    ne <- res[[1]]
-    nu <- res[[2]]
-    nn <- res[[3]]
-
+twogroup_main <- function(x, var1, padj = FALSE, write_files = FALSE, file_names = c("ttest_results.csv", "welch_results.csv", "wilcox_results.csv")) {
+    if (write_files == TRUE && length(file_names) != 3) stop("This function creates three files but has not been provided three names")
+    nenunn <- test_norm(x, var1)
+    ne <- nenunn[[1]]
+    nu <- nenunn[[2]]
+    nn <- nenunn[[3]]
     if (nrow(ne) > 0) {
-        t_res <- run_ttest(ne, var1, padj)
+        t_res <- run_ttest(ne, var1, padj = padj)
         ne_folds <- fold_change(ne, var1)
-
-        t_res <- cbind(t_res, ne_folds)
-        write.csv(t_res, "t_test_results.csv")
+        t_res <- as.data.frame(cbind(t_res, ne_folds))
     }
-
     if (nrow(nu) > 0) {
-
         welch_res <- run_welch(nu, var1, padj)
         nu_folds <- fold_change(nu, var1)
-
-        welch_res <- cbind(welch_res, nu_folds)
-        write.csv(welch_res, "two_group_welch_results.csv")
+        welch_res <- as.data.frame(cbind(welch_res, nu_folds))
     }
-
     if (nrow(nn) > 0) {
         wilcox_res <- run_wilcox(nn, var1, padj)
         nn_folds <- fold_change(nn, var1)
-
-        wilcox_res <- cbind(wilcox_res, nn_folds)
-        write.csv(wilcox_res, "wilcox_results.csv")
+        wilcox_res <- as.data.frame(cbind(wilcox_res, nn_folds))
     }
-    cat("Done.")
-    cat("\n")
+
+    if (write_files == TRUE) {
+        write.csv(t_res, file_names[1])
+        write.csv(welch_res, file_names[2])
+        write.csv(wilcox_res, file_names[3])
+        return(NULL)
+    }
+    all_fcs <- rbind(ne_folds, nu_folds, nn_folds)
+    res <- list("ttest_results" = t_res, "welch_results" = welch_res, "wilcox_results" = wilcox_res, "foldchanges" = all_fcs,
+                "ne" = ne, "nu" = nu, "nn" = nn)
+    return(res)
 }

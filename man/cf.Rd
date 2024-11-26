@@ -7,9 +7,12 @@
 cf(dat, column_index = 1)
 }
 \arguments{
-\item{dat}{a data object}
+\item{dat}{a data.frame}
 
 \item{column_index}{the index of the column you want as your rownames, defaults to 1}
+}
+\value{
+the original data frame with the row names set as specified and the specified column removed
 }
 \description{
 Set rownames to a specified column and remove that column from the dataframe

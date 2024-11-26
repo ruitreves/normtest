@@ -2,19 +2,39 @@
 % Please edit documentation in R/multigroup_main.R
 \name{multigroup_main}
 \alias{multigroup_main}
-\title{This function puts together all the multigroup functions from the package in the correct order.}
+\title{The multi-group statomatic procedure, pulling together all applicable functions in the correct order. Use this function to analyze a dataset
+with more than 2 groups}
 \usage{
-multigroup_main(my_data, var1, var2, var3, padj = FALSE)
+multigroup_main(
+  x,
+  var1,
+  var2 = NULL,
+  var3 = NULL,
+  padj = FALSE,
+  write_files = FALSE,
+  file_names = c("anova_results.csv", "welch_results.csv", "kw_results.csv")
+)
 }
 \arguments{
-\item{my_data}{a data object}
+\item{x}{a numeric data.frame}
 
-\item{var1}{a list that points column names of my_data to the factors of the experiment}
+\item{var1}{a list which maps columns of x to experimental factors. Must be exactly 2 factors}
 
-\item{var2}{a list that points column names of my_data to the factors of the experiment}
+\item{var2}{same as var1, defaults to NULL}
 
-\item{var3}{a list that points column names of my_data to the factors of the experiment}
+\item{var3}{same as var2}
+
+\item{padj}{boolean, whether or not to include Benjamini Hochberg correction. defaults to FALSE}
+
+\item{write_files}{boolean, whether or not to write csv files of the test results instead of returning. Defaults to FALSE}
+
+\item{file_names}{a list of three file names to be used when writing files. Specify as a vector using c(). The first will be the name of the t-test results,
+the second the welch-test results, and the third the wilcox-test results. Only used if write_files = TRUE}
+}
+\value{
+a list containing all test results, fold changes, and subsets of x as sorted by test_norm, unless write_files = TRUE, in which case nothing is returned.
 }
 \description{
-This function puts together all the multigroup functions from the package in the correct order.
+The multi-group statomatic procedure, pulling together all applicable functions in the correct order. Use this function to analyze a dataset
+with more than 2 groups
 }
