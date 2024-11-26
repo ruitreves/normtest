@@ -13,7 +13,7 @@ setClass(
 #' Create a StatomaticDataset (sds)
 #' @param x a numeric matrix or data.frame
 #' @param colData a data.frame of mappings for columns of x to experimental conditions
-#' @param rowData
+#' @param rowData row metadata
 #' @param design a design formula containing column names from colData
 #' @return a StatomaticDataset
 #' @export
@@ -71,10 +71,10 @@ setMethod("get_t_test", "StatomaticDataset", function(object) {
 setGeneric("get_welch_test", function(object) standardGeneric("get_welch_test"))
 #' @export
 setMethod("get_welch_test", "StatomaticDataset", function(object) {
-    if(is.null(object@results$welch_results)) {
+    if(is.null(object@results$welch_test_results)) {
         stop("Data has not yet been analyzed")
     }
-    return(object@results$welch_results)
+    return(object@results$welch_test_results)
 })
 setGeneric("get_wilcox_test", function(object) standardGeneric("get_wilcox_test"))
 #' @export
