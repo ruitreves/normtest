@@ -33,3 +33,25 @@ test_that("dunnett works", {
     }
   }
 })
+
+#test AdunnettT3test
+
+counts_multi <- matrix(
+  sample(1:1, 1600, replace = TRUE), 
+  nrow = 100, ncol = 16,
+  dimnames = list(c(paste0("gene_", 1:100)),
+                  c(paste0("sample_", 1:16)))
+)
+
+metadata <- data.frame(samples = colnames(counts_multi), condition = c(rep("group1", 4), rep("group2", 4), rep("group3", 4), rep("group4", 4)))
+
+x <- run_dunnett(counts_multi, metadata$condition)
+x <- x[, -ncol(x)]
+
+test_that("altered test works", {
+  for (i in 1:nrow(x)) {
+    for (j in 1:ncol(x)) {
+      expect_equal(1, x[i, j])
+    }
+  }
+})

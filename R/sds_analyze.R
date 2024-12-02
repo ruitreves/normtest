@@ -58,7 +58,7 @@ setMethod("sds_analyze", "StatomaticDataset", function(object, condition1 = NULL
         all_results <- rbind(t_res, welch, wilcox)
 
         object@results$t_test_results <- t_res
-        object@results$welch_results <- welch
+        object@results$welch_test_results <- welch
         object@results$wilcox_test_results <- wilcox
     }
     else {
@@ -90,7 +90,7 @@ setMethod("sds_analyze", "StatomaticDataset", function(object, condition1 = NULL
         all_results <- rbind(tukey_res, dunnett_res, dunn_res)
 
         object@results$anova_results <- anova_results
-        object@results$welch_results <- welch_results
+        object@results$welch_test_results <- welch_results
         object@results$kw_results <- kw_results
         object@results$tukey_test_results
         object@results$dunnett_test_results

@@ -27,10 +27,15 @@ fold_change <- function(my_data, var1, FUN = log2, ...) {
                     mean2 <- mean(unlist(x)[var1 == grp_list[j]])
 
                     if (mean2 == 0) {
-                        fld_cng <- Inf
+                        if (mean1 == 0) {
+                            fld_cng <- 0
+                        }
+                        else {
+                            fld_cng <- Inf
+                        }
                     }
                     else if (mean1 == 0) {
-                        fld_cng <- -Inf
+                        fld_cng <- Inf
                     }
                     else {
                         av <- abs(mean1 / mean2)

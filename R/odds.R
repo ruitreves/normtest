@@ -1,37 +1,3 @@
-#' check if two or more group means are zero
-#' @param my_data a data object 
-#' @param var1 a list that points column names of my_data to the factors of the experiment
-#' @export
-check_means <- function(my_data, var1) {
-    grp_list <- unique(var1)
-    bad_list <- c()
-    for (i in 1:nrow(my_data)) {    
-        counter <- 1
-        x <- my_data[i, ]
-
-        for (grp in grp_list) {
-            counter <- counter + 1
-            mean1 <- mean(unlist(x)[var1 == grp])
-
-            if (counter <= length(grp_list)) {
-                for (j in counter:length(grp_list)) {
-                    mean2 <- mean(unlist(x)[var1 == grp_list[j]])
-
-                    if (mean1 == 0 & mean2 ==0) {
-                        bad_list <- append(bad_list, i)
-                    }
-                }
-            }
-        }
-    }
-
-    if (length(bad_list) > 0) {
-        my_data <- my_data[-bad_list, ]
-        print(paste(length(bad_list), "rows removed from", substitute(my_data)))
-        assign("nu", my_data, envir = parent.frame())
-    }
-}
-
 #' Set rownames to a specified column and remove that column from the dataframe
 #' @param dat a data.frame
 #' @param column_index the index of the column you want as your rownames, defaults to 1

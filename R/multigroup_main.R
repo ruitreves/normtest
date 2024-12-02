@@ -48,7 +48,6 @@ multigroup_main <- function(x, var1, var2 = NULL, var3 = NULL, padj = FALSE, wri
         all_fcs <- rbind(all_fcs, fc_ne)
     }
     if (nrow(nu) > 0) {
-        check_means(nu, var3)
         welch_res <- run_welch(nu, var3, padj)
         dunnett_res <- run_dunnett(nu, var3)
         fc_nu <- fold_change(nu, var3)

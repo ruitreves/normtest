@@ -8,7 +8,7 @@ run_dunnett <- function(my_data, var1) {
 
     dunnett_res <- NULL
     for (i in 1:nrow(my_data)) {
-        dunnet <- PMCMRplus::dunnettT3Test(unlist(my_data[i, ]), g = as.factor(var1))
+        dunnet <- AdunnettT3Test(unlist(my_data[i, ]), g = as.factor(var1))
         dunnet <- dunnet$p.value
 
         rn <- rownames(dunnet)
