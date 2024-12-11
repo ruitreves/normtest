@@ -1,0 +1,8 @@
+pandoc: 3.2.1
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  multi_group_vignette: multi_group_vignette.html
+  two_group_vignette: two_group_vignette.html
+last_built: 2024-07-02T18:14Z
+
