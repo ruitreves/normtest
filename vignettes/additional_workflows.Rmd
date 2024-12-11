@@ -1,0 +1,265 @@
+---
+title: "Additional Usage of Statomatic"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{additional_workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette will demonstrate additional usage of the statomatic package beyond that shown in the basic workflow vignette. It is recommended to read
+the basic workflow vignette before reading this one. 
+
+### Begin by loading the statomatic package
+
+```{r setup}
+library(statomatic)
+```
+
+### A general overview
+
+In this example we'll demonstate how to use statomatic without creating a statomatic data set.
+
+All the functions used by statomatic were first developed to be compatible with data.frames. The statomatic data set was added later as an optional
+way to keep data and results organized all in one place. The data.frame compatibility remains, and we can use most of statomatic's functions individually.
+
+We'll use the same normalized counts that were used in the multi-group multi-factor example of the basic workflow vignette.
+
+```{r read in norm_counts}
+x <- read.csv("normalized_counts.csv")
+head(x)
+```
+
+We always need to make sure that the data inside the data.frame is purely numeric, and purely the numbers we're trying to analyze. We can use the cf()
+function to set a specified column (defaults to column 1) as the rownames of the data.frame. 
+
+```{r cf norm_counts}
+x <- cf(x)
+head(x)
+```
+
+We also always need a sample_info object to map our samples (columns of the data.frame) to the experimental factors (groups, etc.).
+
+```{r part 1 sample_info}
+sample_info <- data.frame(samples = colnames(x), sex = c(rep("Male", 10), rep("Female", 10)), 
+                          genotype = c(rep("WT", 5), rep("KO", 5), rep("WT", 5), rep("KO", 5)), 
+                          group = c(rep("M_WT", 5), rep("M_KO", 5), rep("F_WT", 5), rep("F_KO", 5)))
+sample_info
+```
+
+Now, instead of building the statomatic data set, we can just jump right in to the analysis. To do all the same things that sds_analyze does, we can
+use the multigroup_main() function. This function will sort each row of the data based on it's distributions and scedasticity and perform the
+applicable tests. The return value of the function is a list, which contains all the results of the analysis.
+
+```{r multigroup_main 1}
+res <- multigroup_main(x, var1 = sample_info$sex, var2 = sample_info$genotype, var3 = sample_info$group)
+names(res)
+```
+
+You can access the elements of this list either by doing something like res[[1]] (double brackets recommended) or res$anova_results. Also notice that
+instead of specifying a design like we did when building a statomatic data set, we used the var1, 2, and 3 to tell statomatic what the experimental factors
+are. Based on these, statomatic knew to use a two way anova.
+
+The multigroup_main function can handle both a multi factor and a single factor analysis. We could also do this:
+
+```{r multigroup_main 2}
+res <- multigroup_main(x, var1 = sample_info$group)
+names(res)
+```
+
+And notice that now statomatic used a one way anova. 
+
+There is also a twogroup_main function, which works very similarly to the example directly above. Note that the twogroup_main function can only handle 
+one factor with exactly two groups. 
+
+```{r twogroup_main 1}
+res <- twogroup_main(x, var = sample_info$sex)
+names(res)
+```
+
+The sds_analyze function is comprised of these two main functions, along with some control flow stuff to make sure the data is routed to the correct one.
+In the same way that sds_analyze is comprised of the multigroup_main and twogroup_main functions above, each of the two main functions is
+comprised of yet more functions which can also be used independently. 
+
+We'll first dig into the multigroup_main function.
+
+ By doing this:
+
+```{r source code multigroup_main}
+multigroup_main
+```
+
+We can see the source code of the function. 
+
+Don't worry about the whole thing, but notice the functions: test_norm, run_anova, run_tukey, run_welch,
+run_dunnett, run_kruskal, run_dunn, and fold_change. 
+
+Each of these functions is available to use independently of the rest. 
+
+The test_norm function is the function that sorts the data by distribution and scedasticity. It can handle either 1 or 2 factors. 
+
+```{r test_norm}
+res <- test_norm(x, sample_info$sex, sample_info$genotype)
+```
+
+The return value is a list with three data.frames. The first, res[[1]], is data determined to have normally distributed residuals and equal variances 
+amongst the factors. The second, res[[2]], has normally distributed residuals but unequal variances amongst the factors. The third, res[[3]], is data 
+with non-normally distributed residuals. 
+
+To use test_norm with only one factor, simply supply only one.
+
+```{r test_norm 2}
+res <- test_norm(x, sample_info$group)
+```
+
+The usage of the rest of the functions is identical to that of the test_norm function, and their names are descriptive of what they do. 
+
+run_anova runs an anova test, run_tukey runs a tukey test, etc. 
+
+The run_anova function can handle either one factor or two, and either a one way or two way anova will be performed in accordance with the number
+of factors supplied. The rest of the functions only support using one factor. 
+
+We'll demonstate the run_anova function.
+
+```{r run_anova}
+anova_res <- run_anova(x, sample_info$sex, sample_info$genotype)
+head(anova_res)
+```
+
+And the run_tukey function.
+
+```{r run_tukey}
+tukey_res <- run_tukey(x, sample_info$group)
+head(tukey_res)
+```
+
+We'll discuss only briefly about the twogroup_main function. You can view it's source code the same way we did for the multigroup_main function.
+
+This function is made up of the same test_norm function, run_ttest, run_welch, and run_wilcox, which are all available to use independently. 
+
+Run_ttest runs a t-test, run welch runs a welch test (and is the same welch test used in the multigroup case), and run_wilcox runs a wilcox test.
+Each of these three functions can handle only one factor, and their usage is identical to the run_tukey function. 
+
+To end this vignette, we'll demonstrate a more advanced use case for using the multigroup_main function. 
+
+### A more advanced example
+
+In this example we have six different tables we want to analyze. These tables are from a metagenomic analysis, and contain abundance information at the
+phylum, class, order, family, genus, and species level. We looked at this species data before, in the basic workflow vignette. 
+
+There are 24 samples in this experiment, and 3 experiemental factors, with 8 samples per factor. We will call the factors groups 1-3. Therefore, 
+we'll use the multigroup main function with one factor. 
+
+We're going to apply the statomatic method to all six of these tables in order to identify differences between groups at each taxonomic level. 
+
+We read in the data all together and store it in a list.
+
+```{r list files}
+#get all files in the current directory with abundance.csv in the name 
+a <- list.files(".", pattern = "abundance.csv")
+a
+```
+
+Notice that the file names are in alphabetical order.
+
+```{r read in}
+#read them in with read.csv
+read_in <- lapply(a, read.csv)
+#look at first three rows of data
+lapply(read_in, head, 3)
+```
+
+Each of these tables needs the cf function. 
+
+```{r cf all}
+#apply cf to each table
+tables <- lapply(read_in, cf)
+```
+
+We can use the same sample info object for all of these tables, since they all contain the same samples.
+
+```{r make sample_info}
+#tables[[1]] is the first table in the tables list. all the tables have the same column names
+sample_info <- data.frame(sample = colnames(tables[[1]]), group = c(rep("group1", 8), rep("group2", 8), rep("group3", 8)))
+sample_info
+```
+
+Now we'll apply the multigroup_main function to each of these tables, again using lapply.
+
+```{r lapply main}
+res <- lapply(tables, multigroup_main, sample_info$group)
+```
+
+We know from before that multigroup_main returns a list, and we just applied this function to a list of data.frames. 
+So what is res? It's a list of lists. 
+
+```{r}
+#res has 6 elements, one per table we analyzed
+length(res)
+#each element of res has 7 elements
+length(res[[1]])
+names(res[[1]])
+```
+
+Each element of res is the same as it was when we were only analyzing one table. The only difference is now we're working with several of them at once. 
+
+We'll look at the results of the first one just to orient ourselves, and we're only going to look at the first three elements, the anova, welch, and 
+kruskal-wallis results. 
+
+```{r results}
+#get the first element of res (which is a list of results of the first analysis). This will be the class abundances since it is first alphabetically
+x <- res[[1]]
+lapply(x[1:3], head)
+```
+
+Since all the results of this analysis were tested in the same way, and all of the results from each taxonomic level have the same columns, we can 
+collate each one into a single data.frame. 
+
+What we'll do is for each list of results in res, we'll rbind (row bind) the first three elements, save this collated table to a new list and then give 
+it a name. 
+
+For the names, we'll use the result of the list.files function above, but we'll trim off the .csv extension first.
+
+```{r name list}
+#gsub .csv with nothing in list a
+name_list <- gsub(".csv", "", a)
+name_list
+```
+
+Now we'll collate and save the tables
+
+```{r collate tables}
+#define an empty list for our new tables
+collated_tables <- list()
+#use a for loop to collate and save our tables
+for (i in 1:length(res)) {
+  #the current result were processing
+  temp <- res[[i]]
+  #get just the p values and fold change results 
+  first_three <- temp[1:3]
+  #rbind into one new table
+  new_table <- rbind(first_three[[1]], first_three[[2]], first_three[[3]])
+  #save the new table to the collated_tables list
+  collated_tables[[i]] <- new_table
+}
+#set the names of collated_tables to be the names from name_list
+names(collated_tables) <- name_list
+#look at some of the results
+lapply(collated_tables, head, 3)
+```
+
+From here, we could do some further analysis/filtering of the results. One way we could export these results is as follows. We write.csv for each of the 
+elements in collated_tables and give it the same file name as the original abundance table with results_ at the beginning
+
+```{r eval = FALSE, export}
+for (i in 1:length(collated_tables)) {
+  write.csv(collated_tables[[i]], paste0("results_", a[i]))
+}
+```

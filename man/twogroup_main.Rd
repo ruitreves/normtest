@@ -9,6 +9,7 @@ twogroup_main(
   x,
   var1,
   padj = FALSE,
+  include_test_name = FALSE,
   write_files = FALSE,
   file_names = c("ttest_results.csv", "welch_results.csv", "wilcox_results.csv")
 )

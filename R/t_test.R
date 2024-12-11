@@ -4,7 +4,7 @@
 #' @param padj boolean, whether or not to include Benjamini Hochberg correction. defaults to FALSE
 #' @return a data.frame of p values
 #' @export
-run_ttest <- function (my_data, var1, padj = FALSE) {
+run_ttest <- function (my_data, var1, padj = FALSE, include_test_name = FALSE) {
     t_res <- NULL
     for (i in 1:nrow(my_data)) {
         x <- stats::t.test(unlist(my_data[i, ]) ~ var1, var.equal = TRUE)
@@ -26,7 +26,9 @@ run_ttest <- function (my_data, var1, padj = FALSE) {
         t_res <- cbind(t_res, t_padj)
         colnames(t_res) <- c("Pval", "Padj")
     }
-    t_res$test <- "t-test"
+    if (include_test_name == TRUE) {
+        t_res$test <- "t-test"
+    }
     cat("\n")
     return(t_res)
 }

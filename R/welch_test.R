@@ -4,7 +4,7 @@
 #' @param padj boolean, whether or not to include Benjamini Hochberg correction. defaults to FALSE
 #' @return a data.frame of p values
 #' @export
-run_welch <- function (my_data, var1, padj = FALSE) {
+run_welch <- function (my_data, var1, padj = FALSE, include_test_name = FALSE) {
     welch_res <- NULL
     for (i in 1:nrow(my_data)) {
         welch <- onewaytests::welch.test(unlist(my_data[i, ]) ~ 
@@ -29,7 +29,9 @@ run_welch <- function (my_data, var1, padj = FALSE) {
         welch_res <- cbind(welch_res, welch_padj)
         colnames(welch_res) <- c("Pval", "Padj")
     }
-    welch_res$test <- "welch-test"
+    if (include_test_name == TRUE) {
+        welch_res$test <- "welch-test"
+    }
     cat("\n")
     return(welch_res)
 }

@@ -4,7 +4,7 @@
 #' @param padj boolean, whether or not to include Benjamini Hochberg correction. defaults to FALSE
 #' @return a data.frame of p values
 #' @export
-run_wilcox <- function(my_data, var1, padj = FALSE) {
+run_wilcox <- function(my_data, var1, padj = FALSE, include_test_name = FALSE) {
     wilcox_res <- NULL
     for (i in 1:nrow(my_data)) {
         x <- suppressWarnings(stats::wilcox.test(unlist(my_data[i, ]) ~ var1, exact = TRUE))
@@ -27,7 +27,9 @@ run_wilcox <- function(my_data, var1, padj = FALSE) {
         wilcox_res <- cbind(wilcox_res, wilcox_padj)
         colnames(wilcox_res) <- c("Pval", "Padj")
     }
-    wilcox_res$test <- "wilcox-test"
+    if (include_test_name == TRUE) {
+        wilcox_res$test <- "wilcox-test"
+    }
     cat("\n")
 
     return(wilcox_res)

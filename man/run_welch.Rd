@@ -4,7 +4,7 @@
 \alias{run_welch}
 \title{Performs Welch t-test on each row of a data.frame}
 \usage{
-run_welch(my_data, var1, padj = FALSE)
+run_welch(my_data, var1, padj = FALSE, include_test_name = FALSE)
 }
 \arguments{
 \item{my_data}{a numeric data.frame}

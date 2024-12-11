@@ -4,7 +4,7 @@
 \alias{run_ttest}
 \title{Performs a t-test on each row of a data.frame.}
 \usage{
-run_ttest(my_data, var1, padj = FALSE)
+run_ttest(my_data, var1, padj = FALSE, include_test_name = FALSE)
 }
 \arguments{
 \item{my_data}{a numeric data.frame}

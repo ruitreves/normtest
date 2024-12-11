@@ -4,7 +4,7 @@
 \alias{run_wilcox}
 \title{Performs Wilcoxon/Mann-Whitney test on each row of a data.frame}
 \usage{
-run_wilcox(my_data, var1, padj = FALSE)
+run_wilcox(my_data, var1, padj = FALSE, include_test_name = FALSE)
 }
 \arguments{
 \item{my_data}{a numeric data.frame}
