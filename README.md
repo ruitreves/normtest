@@ -40,6 +40,12 @@ Rows that are deemed by this criteria to have normally distributed residuals are
 
 4. Your results are ready. 
 
+## See vignettes here
+
+Basic workflow vignette: https://ruitreves.github.io/statomatic/articles/basic_workflow.html
+
+Additional workflows vignette: https://ruitreves.github.io/statomatic/articles/additional_workflows.html
+
 ## Quick Start Guide
 
 Load the package:
