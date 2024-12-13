@@ -91,4 +91,38 @@ Run analysis:
 sds <- sds_analyze(sds)
 ```
 
+Additionally, statomatic includes stand-alone functions which can be used on data.frames. These functions will treat each row as a seperate variable and each
+column as an observation. 
+
+```{r all funcs}
+#sort data according to statomatic's procedure, one factor or two
+res1 <- test_norm(x, sample_info$group)
+res2 <- test_norm(x, sample_info$sex, sample_info$genotype)
+
+#anova, can use either one factor or two
+anova_res1 <- run_anova(x, sample_info$group)
+anova_res2 <- run_anova(x, sample_info$sex, sample_info$genotype)
+
+#welch's t-test and kruskal-wallis tests, one factor only
+welch_res <- run_welch(x, sample_info$group)
+kw_res <- run_kruskal(x, sample_info$group)
+
+#Multi-comparison tests: TukeyHSD, DunnettT3, and Dunn's test, one factor only
+tukey_res <- run_tukey(x, sample_info$group)
+dunnett_res <- run_dunnett(x, sample_info$group)
+dunn_res <- run_dunn(x, sample_info$group)
+
+#t-tests, one factor only, strictly for two groups
+t_res <- run_ttest(x, sample_info$group)
+wilcox_res <- run_wilcox(x, sample_info$group)
+
+#calculating fold changed, one factor only 
+fc <- fold_change(x, sample_info$group)
+```
+
+## Limitations
+
+Statomatic aims to make addressing the mathematical assumptions of hypothesis tests as easy as possible for users, but be aware that not all kinds of data can be treated in the same way. In multiple examples shown here, bulk RNA-sequencing data is used to demonstrate how to use statomatic. However, there are highly specialized tools specifically designed to handle RNA-seq data, such as DESeq2, which perform many operations and checks on the data that statomatic does not. Although this package draws much inspiration from DESeq2, statomatic should not be seen as a replacement for the highly specialized procedures performed by other tools designed to handle specific data challenges.
+
+
 

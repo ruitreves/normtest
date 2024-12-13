@@ -1,6 +1,6 @@
 ---
 title: "Additional Usage of Statomatic"
-output: rmarkdown::html_vignette
+output: rmarkdown::html_vignette: theme: cerulean
 vignette: >
   %\VignetteIndexEntry{additional_workflows}
   %\VignetteEngine{knitr::rmarkdown}

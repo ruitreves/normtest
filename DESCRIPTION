@@ -2,22 +2,10 @@ Package: statomatic
 Title: Sort Data by Distribution and Apply Appropriate Statistical Test in a High Throughput Manner
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("Rui", "Treves", , "first.last@example.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: The purpose of this package is to provide functions that allow a user to analyze large data sets 
-    in a high throughput way. The functions can be used individually, or "main" functions rui/two_group_rui are 
-    provided that structure the individual functions in the correct way. The main functions work by first sorting
-    data according to its probability distribution into either normal or nonnormal, and then sorts 
-    the normally distributed data by scedasticity. The result is three tiers.
-    1. tier1 is data which is normally distributed and homoscedastic.
-    2. tier2 is data which is normally distributed and heteroscedastic.
-    3. tier3 is data which is not normally distributed.
-    Each of the three tiers is then analyzed with the appropriate statistical tests. In the multigroup case,
-    tier1 is analyzed with a two way anova followed by a Tukey multi-comparison test. Tier2 is analyzed by a 
-    Welch t-test followed by a Dunnett T3 multi-comparison test. Tier3 is analyzed by Kruskal-Wallis test 
-    followed by a Dunn multi-comparison test. 
-    In the two group case, tier1 is analyzed with a Student's t-test. Tier2 is analyzed by a Welch t-test. Tier3 is
-    analyzed by a Wilcoxon/Mann-Whitney test.
+Description: The statomatic package is a high-throughput hypothesis testing package designed to determine which statistical tests are appropriate for each
+individual variable in a data set and perform the tests. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
